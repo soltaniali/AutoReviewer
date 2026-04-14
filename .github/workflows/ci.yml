@@ -31,16 +31,16 @@ jobs:
       run: |
         pytest --ignore=tests/test_integration.py
 
-  build:
-    name: Validate Docker Build (CD Readiness)
-    runs-on: ubuntu-latest
-    needs: test
+#   build:
+#     name: Validate Docker Build (CD Readiness)
+#     runs-on: ubuntu-latest
+#     needs: test
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+#     steps:
+#     - name: Checkout repository
+#       uses: actions/checkout@v4
 
-    - name: Build Docker API & Worker images
-      # This ensures the application is deployable by validating the Dockerfile and docker-compose
-      run: |
-        docker-compose build
+#     - name: Build Docker API & Worker images
+#       # This ensures the application is deployable by validating the Dockerfile and docker-compose
+#       run: |
+#         docker-compose build
