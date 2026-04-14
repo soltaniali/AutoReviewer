@@ -6,6 +6,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=flat&logo=kubernetes&logoColor=white)](https://kubernetes.io/)
 [![LangGraph](https://img.shields.io/badge/LangGraph-Agentic_AI-green)](https://langchain-ai.github.io/langgraph/)
 
 **Elevate your pull requests with an autonomous squad of expert AI engineers.**
@@ -122,6 +123,23 @@ The system utilizes a directed acyclic graph (DAG) to coordinate responsibilitie
    docker-compose up --build -d
    ```
    *This starts the FastAPI server on port `8000`, the Redis broker, and the Celery background workers.*
+
+### Kubernetes Deployment (Production)
+
+For true enterprise scale, deploy AutoReviewer on Kubernetes. Manifests configure scalable API instances and infinite Celery workers.
+
+1. **Configure Secrets**
+   ```bash
+   cp k8s/secret.yaml.example k8s/secret.yaml
+   # Edit secret.yaml with your OPENAI_API_KEY
+   kubectl apply -f k8s/secret.yaml
+   ```
+
+2. **Apply Manifests**
+   ```bash
+   kubectl apply -f k8s/manifests.yaml
+   ```
+   *This deploys Redis, the FastAPI LoadBalancer, and the Celery Worker deployment.*
 
 ### Usage
 
