@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+celery
+redis
+python-dotenv
+langchain
+langchain-openai
+langgraph
+beautifulsoup4
+langsmith

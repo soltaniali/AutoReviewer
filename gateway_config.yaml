@@ -1,0 +1,6 @@
+routes:
+  - name: test-model
+    model_name: gpt-4o-mini
+    provider: openai
+    config:
+      openai_api_key: $OPENAI_API_KEY

@@ -1,0 +1,57 @@
+# version: '3.8'
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    command: ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+    volumes:
+      - .:/app
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    command: ["celery", "-A", "worker.celery_app", "worker", "--loglevel=info"]
+    volumes:
+      - .:/app
+  
+  mlflow-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: mlflow
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mlflow_db
+    ports:
+      - "5432:5432"
+
+  mlflow-gateway:
+    build: 
+      context: ./gateway
+      args:
+        HTTP_PROXY: ""
+        HTTPS_PROXY: ""
+        http_proxy: ""
+        https_proxy: ""
+        NO_PROXY: "*"
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    volumes:
+      - ./gateway/config.yaml:/gateway/config.yaml
