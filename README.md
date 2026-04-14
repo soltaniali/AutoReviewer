@@ -2,7 +2,7 @@
 
 # 🚀 AutoReviewer: Production-Grade Multi-Agent Code Review System
 
-[![CI/CD](https://github.com/yourusername/autoreviewer/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/autoreviewer/actions/workflows/ci.yml)
+[![CI/CD](https://github.com/soltaniali/autoreviewer/actions/workflows/ci.yml/badge.svg)](https://github.com/soltaniali/autoreviewer/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
@@ -42,24 +42,20 @@ The architecture separates the high-throughput web layer from the blocking natur
 
 ```mermaid
 flowchart LR
-    %% Styling Profile
-    classDef primary fill:#2563eb,stroke:#1e40af,stroke-width:2px,color:#fff,rx:5px,ry:5px
-    classDef secondary fill:#059669,stroke:#047857,stroke-width:2px,color:#fff,rx:5px,ry:5px
-    classDef agent fill:#7c3aed,stroke:#5b21b6,stroke-width:2px,color:#fff,rx:5px,ry:5px
-    classDef db fill:#dc2626,stroke:#b91c1c,stroke-width:2px,color:#fff,rx:5px,ry:5px
+    classDef primary fill:#2563eb,stroke:#1e40af,stroke-width:2px,color:#fff
+    classDef secondary fill:#059669,stroke:#047857,stroke-width:2px,color:#fff
+    classDef agent fill:#7c3aed,stroke:#5b21b6,stroke-width:2px,color:#fff
+    classDef db fill:#dc2626,stroke:#b91c1c,stroke-width:2px,color:#fff
     
-    %% Components
     Client((Client / CI))
     
     subgraph Infrastructure [Async Event Infrastructure]
-        direction TB
         API[FastAPI Gateway]:::primary
         Redis[(Redis Broker)]:::db
         Worker[Celery Task Worker]:::primary
     end
     
     subgraph Engine [LangGraph Agentic Engine]
-        direction LR
         AST[AST Diff Parser]:::secondary
         Planner{Planner Strategy}:::agent
         Bug[Bug Detector]:::agent
@@ -68,12 +64,10 @@ flowchart LR
         Synth{Synthesizer}:::agent
     end
     
-    %% API & Queue Flow
     Client -->|1. POST .zip| API
     API -.->|2. Enqueue| Redis
     Redis -.->|3. Consume| Worker
     
-    %% Agent Flow
     Worker ==>|4. Execute Graph| AST
     AST --> Planner
     Planner -->|async dispatch| Bug
@@ -84,10 +78,9 @@ flowchart LR
     Sec --> Synth
     Style --> Synth
     
-    %% Report Flow
     Synth ==>|5. Final Markdown| Worker
     Worker -.->|6. Store Result| Redis
-    Client -->|7. GET /results/id| API
+    Client -.->|7. GET /results/id| API
 ```
 
 ---
