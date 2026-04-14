@@ -2,7 +2,7 @@
 
 # 🚀 AutoReviewer: Production-Grade Multi-Agent Code Review System
 
-<!-- [![CI/CD](https://github.com/soltaniali/autoreviewer/actions/workflows/ci.yml/badge.svg)](https://github.com/soltaniali/autoreviewer/actions/workflows/ci.yml) -->
+[![CI/CD](https://github.com/soltaniali/autoreviewer/actions/workflows/ci.yml/badge.svg)](https://github.com/soltaniali/autoreviewer/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)

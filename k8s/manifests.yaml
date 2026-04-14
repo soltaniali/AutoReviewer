@@ -1,0 +1,125 @@
+# Redis Deployment & Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  labels:
+    app: autoreviewer
+    tier: cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        tier: cache
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app: autoreviewer
+    tier: cache
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: redis
+---
+# API Deployment & Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  labels:
+    app: autoreviewer
+    tier: web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+        tier: web
+    spec:
+      containers:
+      - name: api
+        image: autoreviewer-api:latest  # Replace with your Docker registry image (e.g., username/autoreviewer-api:v1)
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+        env:
+        - name: CELERY_BROKER_URL
+          value: "redis://redis:6379/0"
+        - name: CELERY_RESULT_BACKEND
+          value: "redis://redis:6379/0"
+        # Mount API keys securely via Kubernetes Secrets
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: autoreviewer-secrets
+              key: OPENAI_API_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-service
+  labels:
+    app: autoreviewer
+    tier: web
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+  selector:
+    app: api
+---
+# Celery Worker Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  labels:
+    app: autoreviewer
+    tier: worker
+spec:
+  replicas: 3 # Scale workers infinitely based on repository size loads
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+        tier: worker
+    spec:
+      containers:
+      - name: worker
+        image: autoreviewer-api:latest  # Same image as the API, just running different command
+        imagePullPolicy: IfNotPresent
+        command: ["celery", "-A", "worker", "worker", "--loglevel=info"]
+        env:
+        - name: CELERY_BROKER_URL
+          value: "redis://redis:6379/0"
+        - name: CELERY_RESULT_BACKEND
+          value: "redis://redis:6379/0"
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: autoreviewer-secrets
+              key: OPENAI_API_KEY
